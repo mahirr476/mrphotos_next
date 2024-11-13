@@ -1,0 +1,28 @@
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      target: development
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./photo-gallery-server:/usr/src/app
+      - /usr/src/app/node_modules
+
+  frontend:
+    build:
+      target: development
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./photo-gallery:/usr/src/app
+      - /usr/src/app/.next
+      - /usr/src/app/node_modules
