@@ -1,25 +1,40 @@
 // src/api/services/auth.ts
+import { AuthResponse, User } from '@/types';
 import api from '../config/axios';
-import { LoginRequest, RegisterRequest, AuthResponse } from '../types/api';
 
 export const authService = {
-  login: async (credentials: LoginRequest): Promise<AuthResponse> => {
+  login: async (credentials: { 
+    email: string; 
+    password: string; 
+  }): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', credentials);
     return response.data;
   },
 
-  register: async (data: Omit<RegisterRequest, 'confirmPassword'>): Promise<AuthResponse> => {
-    // Role will be set by the backend
+  register: async (data: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/register', data);
     return response.data;
   },
 
-  validateToken: async (): Promise<{ user: AuthResponse['user'] }> => {
-    const response = await api.get<{ user: AuthResponse['user'] }>('/auth/me');
+  validateToken: async (): Promise<{ user: User }> => {
+    const response = await api.get<{ user: User }>('/auth/me');
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem('token');
-  }
+  updateProfile: async (data: Partial<User>): Promise<User> => {
+    const response = await api.patch<User>('/auth/profile', data);
+    return response.data;
+  },
+
+  changePassword: async (data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<void> => {
+    await api.post('/auth/change-password', data);
+  },
 };

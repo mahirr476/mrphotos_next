@@ -19,7 +19,7 @@ services:
       dockerfile: ../docker/backend/Dockerfile
     container_name: mrphotos_backend
     environment:
-      NODE_ENV: production
+      NODE_ENV: development  # Changed to development
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       PORT: 3001
@@ -30,27 +30,35 @@ services:
     networks:
       - app_network
     volumes:
-      - ./server:/usr/src/app
+      - ./server:/usr/src/app:delegated  # Added delegated for better performance
       - /usr/src/app/node_modules
+      - /usr/src/app/dist
+    command: npm run dev  # Added command to run in dev mode with hot reload
+    stdin_open: true  # Added for interactive processes
+    tty: true  # Added for interactive processes
 
-  # Optional: Include frontend if you want to containerize it
   frontend:
     build:
       context: ./client/photo-gallery
       dockerfile: ../../docker/frontend/Dockerfile
     container_name: mrphotos_frontend
+    environment:
+      NODE_ENV: development  # Changed to development
+      NEXT_PUBLIC_API_URL: http://backend:3001
+      WATCHPACK_POLLING: "true"  # Added for Windows compatibility
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://backend:3001
     depends_on:
       - backend
     networks:
       - app_network
     volumes:
-      - ./client/photo-gallery:/usr/src/app
+      - ./client/photo-gallery:/usr/src/app:delegated  # Added delegated for better performance
       - /usr/src/app/.next
       - /usr/src/app/node_modules
+    command: npm run dev  # Added command to run in dev mode with hot reload
+    stdin_open: true  # Added for interactive processes
+    tty: true  # Added for interactive processes
 
 networks:
   app_network:

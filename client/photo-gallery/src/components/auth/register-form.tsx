@@ -60,8 +60,7 @@ export function RegisterForm() {
     try {
       setIsLoading(true);
       const { confirmPassword, ...registrationData } = values;
-      
-      const response = await authService.register(registrationData);
+      await authService.register(registrationData);
       await login({ 
         email: values.email, 
         password: values.password 
@@ -73,10 +72,10 @@ export function RegisterForm() {
       });
   
       router.push('/gallery');
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Registration failed",
-        description: error.response?.data?.message || 'Something went wrong',
+        description: (error as any).response?.data?.message || 'Something went wrong',
         variant: "destructive",
       });
     } finally {

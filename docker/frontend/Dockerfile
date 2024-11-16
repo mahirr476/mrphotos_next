@@ -10,9 +10,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build Next.js app
-RUN npm run build
-
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Development mode with hot reloading
+CMD ["npm", "run", "dev"]

@@ -45,11 +45,12 @@ export function LoginForm() {
     try {
       setIsLoading(true);
       await login(values);
-      router.push('/gallery');
-    } catch (error: any) {
+      router.push('/dashboard/gallery'); // Update this path
+    } catch (error) {
+      const errorMessage = (error as any)?.response?.data?.message || 'Invalid credentials';
       toast({
         title: "Login failed",
-        description: error.response?.data?.message || 'Invalid credentials',
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -103,10 +104,8 @@ export function LoginForm() {
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm">
-          Don't have an account?{' '}
-          <Link href="/register" className="text-blue-500 hover:underline">
-            Register
-          </Link>
+            Don&apos;t have an account?{' '}
+            <Link href="/register">Register</Link>
         </p>
       </CardFooter>
     </Card>

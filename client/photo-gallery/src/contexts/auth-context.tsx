@@ -2,14 +2,20 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { User } from '@/types';
 import { authService } from '@/api/services/auth';
-import { LoginRequest } from '@/api/types/api';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (credentials: LoginRequest) => Promise<void>;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
+  register: (data: { 
+    email: string; 
+    password: string; 
+    firstName?: string; 
+    lastName?: string; 
+  }) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
 }
@@ -17,8 +23,24 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Protected routes - redirect to login if not authenticated
+  useEffect(() => {
+    const protectedRoutes = ['/profile', '/settings', '/upload'];
+    const authRoutes = ['/login', '/register'];
+    
+    if (isLoading) return;
+
+    if (!user && protectedRoutes.some(route => pathname?.startsWith(route))) {
+      router.push('/login');
+    } else if (user && authRoutes.includes(pathname || '')) {
+      router.push('/');
+    }
+  }, [user, isLoading, pathname, router]);
 
   const checkAuth = async () => {
     try {
@@ -31,29 +53,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user } = await authService.validateToken();
       setUser(user);
     } catch (error) {
-      authService.logout();
+      localStorage.removeItem('token');
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Check authentication status on mount
   useEffect(() => {
-    checkAuth();
+    void checkAuth();
   }, []);
 
-  const login = async (credentials: LoginRequest) => {
-    const response = await authService.login(credentials);
-    localStorage.setItem('token', response.token);
-    setUser(response.user);
+  const login = async (credentials: { email: string; password: string }) => {
+    try {
+      const response = await authService.login(credentials);
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      router.push('/');
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const register = async (data: { 
+    email: string; 
+    password: string; 
+    firstName?: string; 
+    lastName?: string; 
+  }) => {
+    try {
+      const response = await authService.register(data);
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      router.push('/');
+    } catch (error) {
+      throw error;
+    }
   };
 
   const logout = () => {
-    authService.logout();
+    localStorage.removeItem('token');
     setUser(null);
+    router.push('/login');
   };
 
+  if (isLoading) {
+    // You might want to show a loading spinner here
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, checkAuth }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        isLoading, 
+        login, 
+        register, 
+        logout, 
+        checkAuth 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

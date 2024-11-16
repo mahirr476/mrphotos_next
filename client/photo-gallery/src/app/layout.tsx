@@ -1,8 +1,12 @@
 // src/app/layout.tsx
 import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/auth-context';
-import { Navbar } from '@/components/layout/navbar';
 import { Toaster } from '@/components/ui/toaster';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { Providers } from './providers'
+
+
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -17,9 +21,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Navbar />
-          <main className="p-8 md:ml-[16rem]">
+          <Providers>
             {children}
-          </main>
+          </Providers>
+          <Footer />
           <Toaster />
         </AuthProvider>
       </body>
