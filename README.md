@@ -1,7 +1,168 @@
 # MrPhotos - Photography Platform Documentation
 
-## Overview
-MrPhotos is a professional photography platform designed to showcase and share high-quality photographs, focusing on personal portfolios and community engagement.
+## Quick Start Guide
+
+### Prerequisites
+- Node.js v20+
+- Docker and Docker Compose
+- PostgreSQL (if running without Docker)
+- Git
+
+### Clone Repository
+```bash
+git clone <repository-url>
+cd mrphotos
+```
+
+### Environment Setup
+
+1. Create backend environment file:
+```bash
+# server/.env
+DATABASE_URL="postgresql://mrphotos:mr_photos@postgres:5432/mrphotos"
+JWT_SECRET="your-secret-key"
+PORT=3001
+```
+
+2. Create frontend environment file:
+```bash
+# client/.env
+NEXT_PUBLIC_API_URL="http://localhost:3001"
+```
+
+### Installation
+
+#### Backend Setup
+```bash
+cd server
+npm install
+npx prisma generate
+```
+
+#### Frontend Setup
+```bash
+cd client/photo-gallery
+npm install
+```
+
+### Running with Docker (will rum ciient and server with 1 call)
+From the root directory:
+```bash
+# Start all services
+docker compose -f /docker_compose.yml/ up -d
+OR
+docker compose up --build
+
+# View logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Stop services
+docker compose down
+```
+
+### Running Locally (Without Docker)
+#### Backend
+```bash
+cd server
+npm run dev
+```
+
+#### Frontend
+```bash
+cd client/photo-gallery
+npm run dev
+```
+
+## Current Implementation Status
+
+### Backend Implementation
+- ✅ Express server setup
+- ✅ PostgreSQL with Prisma ORM
+- ✅ Authentication system (JWT)
+- ✅ User roles (USER, ADMIN, CREATOR)
+- ✅ Basic API structure
+
+### Frontend Implementation
+- ✅ Next.js 14 setup
+- ✅ Tailwind CSS
+- ✅ shadcn/ui components
+- ✅ Authentication UI
+- ✅ Basic routing structure
+
+### Current Features
+
+#### Authentication
+- Login/Register functionality
+- Role-based access control
+- Protected routes
+- Token management
+
+#### Pages Implemented
+- Public Home Page
+- Login/Register Pages
+- Feed Page (in progress)
+- Photographer Portfolio Page (in progress)
+
+#### Components Created
+- Navigation Bar
+- Photo Feed Card
+- Collection Grid
+- Auth Forms
+- Layout Components
+
+### Directory Structure
+```
+mrphotos/
+├── server/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── app.ts
+│   ├── prisma/
+│   └── package.json
+├── client/
+│   ├── photo-gallery/
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   ├── components/
+│   │   │   ├── contexts/
+│   │   │   └── types/
+│   │   └── package.json
+├── docker/
+│   ├── backend/
+│   └── frontend/
+└── docker-compose.yml
+```
+
+### API Endpoints Implemented
+```
+AUTH:
+POST /api/auth/login
+POST /api/auth/register
+GET  /api/auth/me
+
+USERS:
+GET  /api/users
+GET  /api/users/:id
+PATCH /api/users/:id/role
+
+PHOTOS: (In Progress)
+GET  /api/photos/feed
+POST /api/photos
+GET  /api/photos/:id
+```
+
+
+## Development Tools
+- VS Code with ESLint and Prettier
+- Prisma extension for VS Code
+- React Developer Tools
+- Docker Desktop
+
+
+---------------------------------------------------------------------
 
 ## Development Phases
 
@@ -124,7 +285,7 @@ MrPhotos is a professional photography platform designed to showcase and share h
 
 ### Infrastructure
 - Docker containerization
-- Cloudinary for image storage
+- Azure or Cloudinary for photo storage
 - Redis for caching (future implementation)
 - AWS S3 for backup storage (future implementation)
 
@@ -143,7 +304,7 @@ MrPhotos is a professional photography platform designed to showcase and share h
 - Security best practices
 
 ### Design Principles
-- Mobile-first approach
+- Mobile-first approach (experience on mobile needs to be easy to use and attractive)
 - Responsive design
 - Accessibility compliance
 - Performance optimization
