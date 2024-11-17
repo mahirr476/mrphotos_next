@@ -182,13 +182,13 @@ export function RegisterForm() {
        </Form>
      </CardContent>
      <CardFooter className="justify-center">
-       <p className="text-sm">
-         Already have an account?{' '}
-         <Link href="/login" className="text-blue-500 hover:underline">
-           Login
-         </Link>
-       </p>
-     </CardFooter>
+        <p className="text-sm">
+          Already have an account?{' '}
+          <Link href="/auth/login" className="text-blue-500 hover:underline">
+            Login
+          </Link>
+        </p>
+      </CardFooter>
    </Card>
  );
 }

@@ -35,16 +35,40 @@ export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
 
   // src/components/layout/Navbar.tsx
-const navigationItems = [
-  { href: '/main/explore/feed', label: 'Feed', icon: Camera },
-  { href: '/main/explore/photographer', label: 'Portfolio', icon: User },
-  { href: '/main/feed', label: 'Blog', icon: BookOpen },
-];
+  const navigationItems = [
+    { 
+      href: '/main/explore/feed', 
+      label: 'Explore', 
+      icon: Camera,
+      description: 'View photo feed'
+    },
+    { 
+      href: '/main/explore/photographer', 
+      label: 'M.Rahman', 
+      icon: User,
+      description: 'View photographer portfolio'
+    },
+    { 
+      href: '/main/feed', 
+      label: 'Blog', 
+      icon: BookOpen,
+      description: 'Read blog posts'
+    },
+  ];
+  
+  const userNavigationItems = [
+    { 
+      href: '/main/profile', 
+      label: 'Profile', 
+      icon: User 
+    },
+    { 
+      href: '/main/settings', 
+      label: 'Settings', 
+      icon: Settings 
+    },
+  ];
 
-const userNavigationItems = [
-  { href: '/main/profile', label: 'Profile', icon: User },
-  { href: '/main/settings', label: 'Settings', icon: Settings },
-];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-lg">
@@ -187,13 +211,13 @@ const userNavigationItems = [
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild>
-                  <Link href="/login">Log in</Link>
-                </Button>
-                <Button asChild className="hidden md:inline-flex">
-                  <Link href="/register">Sign up</Link>
-                </Button>
-              </div>
+              <Button variant="ghost" asChild>
+                <Link href="/auth/login">Log in</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/auth/register">Sign up</Link>
+              </Button>
+            </div>
             )}
           </div>
         </div>

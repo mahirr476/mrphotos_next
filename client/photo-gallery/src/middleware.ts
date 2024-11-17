@@ -1,28 +1,29 @@
 // src/middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const token = request.cookies.get('token');
+  const { pathname } = request.nextUrl
+  const token = request.cookies.get('token')
 
-  // Auth routes - redirect to dashboard if logged in
-  if ((pathname === '/login' || pathname === '/register') && token) {
-    return NextResponse.redirect(new URL('/dashboard/gallery', request.url));
+  // Public paths that don't require authentication
+  const publicPaths = ['/', '/auth/login', '/auth/register']
+  
+  // If trying to access auth pages while logged in
+  if (token && pathname.startsWith('/auth/')) {
+    return NextResponse.redirect(new URL('/main/explore/feed', request.url))
   }
 
-  // Protected routes - redirect to login if not logged in
-  if (pathname.startsWith('/dashboard') && !token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // If trying to access protected pages while logged out
+  if (!token && pathname.startsWith('/main/')) {
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    '/login',
-    '/register',
-    '/main/:path*'
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
-};
+}
