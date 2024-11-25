@@ -1,4 +1,3 @@
-// // src/components/auth/register-form.tsx
 'use client'
 
 import { useState } from 'react'
@@ -21,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { toast } from '@/hooks/use-toast'
 import { authService } from '@/api/services/auth'
+import { Eye, EyeOff } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -44,6 +44,8 @@ export function RegisterForm() {
   const router = useRouter()
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -84,8 +86,8 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader className="pb-4">
+    <Card className="w-full max-w-4xl mx-auto py-10">
+      <CardHeader className="pb-4 ">
         <h2 className="text-2xl font-bold text-center">Create Account</h2>
       </CardHeader>
       <CardContent>
@@ -141,14 +143,30 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm">Password</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="••••••••"
-                      {...field} 
-                      className="h-9"
-                    />
-                  </FormControl>
+                  <div className="relative">
+                    <FormControl>
+                      <Input 
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        {...field} 
+                        className="h-9 pr-10"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-500" />
+                      )}
+                    </Button>
+                  </div>
                   <FormMessage className="text-xs" />
                 </FormItem>
               )}
@@ -160,14 +178,30 @@ export function RegisterForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm">Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="password" 
-                      placeholder="••••••••"
-                      {...field} 
-                      className="h-9"
-                    />
-                  </FormControl>
+                  <div className="relative">
+                    <FormControl>
+                      <Input 
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        {...field} 
+                        className="h-9 pr-10"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-500" />
+                      )}
+                    </Button>
+                  </div>
                   <FormMessage className="text-xs" />
                 </FormItem>
               )}
@@ -186,7 +220,7 @@ export function RegisterForm() {
       <CardFooter className="justify-center pt-2">
         <p className="text-sm">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-primary hover:underline">
+          <Link href="/auth/login" className="text-blue-500 hover:underline">
             Login
           </Link>
         </p>
@@ -194,6 +228,4 @@ export function RegisterForm() {
     </Card>
   )
 }
-
-
 
