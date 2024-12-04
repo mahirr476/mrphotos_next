@@ -1,4 +1,4 @@
-// src/components/auth/login-form.tsx
+
 'use client'
 
 import { useState } from 'react';
@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -29,9 +30,10 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function LoginForm() {
-  const { login } = useAuth();
+  const { login, socialLogin } = useAuth(); // Added `socialLogin` for social authentication
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -58,12 +60,29 @@ export function LoginForm() {
     }
   }
 
+  async function handleSocialLogin(provider: 'google' | 'github') {
+    try {
+      setIsLoading(true);
+      await socialLogin(provider); // Example: Trigger social login for the chosen provider
+      router.push('/dashboard/gallery'); // Redirect after successful login
+    } catch (error) {
+      toast({
+        title: `Login with ${provider} failed`,
+        description: 'Something went wrong. Please try again.',
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Card className="w-[350px]">
       <CardHeader>
         <h2 className="text-2xl font-bold text-center">Login</h2>
       </CardHeader>
       <CardContent>
+        {/* Email and Password Login */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -86,14 +105,27 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        {...field}
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full"
               disabled={isLoading}
             >
@@ -101,6 +133,24 @@ export function LoginForm() {
             </Button>
           </form>
         </Form>
+
+        {/* Social Media Authentication */}
+        <div className="mt-6 space-y-2">
+          <Button
+            onClick={() => handleSocialLogin('google')}
+            className="w-full bg-red-500 text-white hover:bg-red-600"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Loading...' : 'Continue with Google'}
+          </Button>
+          <Button
+            onClick={() => handleSocialLogin('github')}
+            className="w-full bg-gray-800 text-white hover:bg-gray-900"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Loading...' : 'Continue with GitHub'}
+          </Button>
+        </div>
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm">
